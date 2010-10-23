@@ -1,0 +1,3 @@
+overlay chrome://browser/content/browser.xul chrome://phinishphish/content/browser.xul
+content phinishphish chrome/content/
+locale phinishphish en-US chrome/locale/en-US

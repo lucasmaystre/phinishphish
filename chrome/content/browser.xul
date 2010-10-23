@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<?xml-stylesheet
+    href="chrome://phinishphish/content/browser.css"
+    type="text/css"?>
+<!DOCTYPE overlay SYSTEM "chrome://phinishphish/locale/lang.dtd">
+<overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+<statusbar id="status-bar">
+  <statusbarpanel id="phinishphish-statusoverlay"
+      insertafter="statusbar-progresspanel" onclick="alert('Hello World!')">
+    <label>PP</label>
+  </statusbarpanel>
+</statusbar>
+
+</overlay>
