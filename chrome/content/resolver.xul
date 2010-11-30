@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="css/resolver.css" type="text/css"?>
+
+<window
+    id="phinishphish-resolver"
+    title="Phinishing Phishing"
+    hidechrome="false"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+
+  <!-- 'main.js' defines the namespace, and therefore has to be on top. -->
+  <script src="js/main.js"            type="application/javascript" />
+  <script src="js/EntityProvider.js"  type="application/javascript" />
+  <script src="js/Resolver.js"        type="application/javascript" />
+
+  <!-- Initializer script. -->
+  <script type="application/javascript">
+    <![CDATA[
+      const Cc = Components.classes, Ci = Components.interfaces;
+      window.addEventListener('load',
+          function() {
+            var res = new phinishphish.Resolver();
+            res.run();
+          }, false);
+    ]]>
+  </script>
+
+  <vbox flex="1"> <!-- BEGIN main container box. -->
+
+    <!-- The static header -->
+    <hbox id="phinishphish-header">
+      <image class="question-icon" />
+      <vbox flex="1">
+        <label id="phinishphish-title">
+          Who do you think you are talking to ?
+        </label>
+        <label>
+          This page is trying to get information from you, but we don't
+          know if it can be trusted. Help us by telling who you intended to
+          visit.
+        </label>
+      </vbox>
+    </hbox>
+
+    <!-- The main deck, containing all the possible states. -->
+    <deck id="phinishphish-mainDeck" selectedIndex="0" flex="1"> <!-- By default, show the progressmeter -->
+      
+      <!-- Progressmeter. -->
+      <vbox id="phinishphish-boxProgress" align="center" valign="middle">
+        Loading...
+      </vbox>
+      
+      <!-- Input field. -->
+      <vbox id="phinishphish-boxInput" valign="middle">
+        <groupbox id="pp-searchBox">
+        <vbox style="padding:20px">
+          <label>Enter a name (company, organization, domain, ...)</label>
+          <textbox size="64" id="pp-searchInput" />
+          <box align="start">
+            <button id="pp-searchButton" label="Search" />
+          </box>
+        </vbox>
+        </groupbox>
+      </vbox>
+      
+      <!-- Entity selector. -->
+      <vbox id="phinishphish-boxSelector">
+        <hbox id="phinishphish-selectorHeader">
+          <label>Your query was : <label class="em">paypel</label>
+          (<label href="#" class="text-link" value="change" />).
+          Click on an image below:</label>
+        </hbox>
+
+        <vbox flex="1" pack="center" id="phinishphish-boxDisplay">
+          <grid>
+            <columns id="pp-selectCols" pack="center">
+              <column id="pp-col--1" align="center">
+                <image id="pp-img--1" src="chrome://phinishphish/content/img/other.png"
+                    width="128px" height="128px" />
+                <label>Other...</label>
+              </column>
+            </columns>
+          </grid>
+        </vbox>
+
+      </vbox>
+    </deck>
+
+    <!-- The status bar. -->
+    <statusbar id="phinishphish-statusBar">
+      <statusbarpanel id="phinishphish-version" label="Phinishing Phishing v. 0.1" flex="1"/>
+      <statusbarpanel id="pp-loadStatus" label="Loading..." />
+      <statusbarpanel id="phinishphish-progressPanel">
+        <progressmeter id="pp-progressBar" mode="determined" value="100" />
+      </statusbarpanel>
+    </statusbar>
+
+    <!-- A box with buttons for developement purposes. -->
+    <!-- -->
+    <hbox>
+      <button id="phinishphish-buttonProgress" label="Progress" />
+      <button id="phinishphish-buttonInput" label="Input" />
+      <button id="phinishphish-buttonSelector" label="Selector" />
+    </hbox>
+    <!-- -->
+  </vbox> <!-- END main container box. -->
+</window>

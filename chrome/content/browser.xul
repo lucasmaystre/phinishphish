@@ -1,15 +1,37 @@
 <?xml version="1.0"?>
-<?xml-stylesheet
-    href="chrome://phinishphish/content/browser.css"
-    type="text/css"?>
+<?xml-stylesheet href="css/browser.css" type="text/css"?>
 <!DOCTYPE overlay SYSTEM "chrome://phinishphish/locale/lang.dtd">
 <overlay xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-<statusbar id="status-bar">
-  <statusbarpanel id="phinishphish-statusoverlay"
-      insertafter="statusbar-progresspanel" onclick="alert('Hello World!')">
-    <label>PP</label>
-  </statusbarpanel>
-</statusbar>
+  <!-- 'main.js' defines the namespace, and therefore has to be on top. -->
+  <script src="js/main.js"            type="application/javascript" />
+  <script src="js/Set.js"             type="application/javascript" />
+  <script src="js/ReqObserver.js"     type="application/javascript" />
+  <script src="js/EntityProvider.js"  type="application/javascript" />
+  <script src="js/TrustProvider.js"   type="application/javascript" />
+  <script src="js/SpoofBlocker.js"    type="application/javascript" />
+
+  <!-- Initializer script. -->
+  <script type="application/javascript">
+    <![CDATA[
+      window.addEventListener('load',
+          function() {
+            var sb = new phinishphish.SpoofBlocker();
+            sb.run();
+          }, false);
+    ]]>
+  </script>
+
+  <!-- The status bar indicator. -->
+  <statusbar id="status-bar">
+    <statusbarpanel id="phinishphish-sbp" insertafter="statusbar-progresspanel">
+      <label>PP</label>
+    </statusbarpanel>
+
+    <panel id="phinishphish-notice">
+      <label value="Resolution succeeded!" />
+    </panel>
+
+  </statusbar>
 
 </overlay>

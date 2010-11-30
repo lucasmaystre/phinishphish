@@ -1,0 +1,55 @@
+#pp-searchBox {
+  margin: 30px 40px;
+  padding: 20px;
+}
+
+#phinishphish-header,
+#phinishphish-selectorHeader {
+  border-bottom: 2px groove white;
+}
+
+#phinishphish-boxDisplay {
+  background-color: white;
+}
+
+#phinishphish-boxDisplay image {
+  border: 3px solid #EDEDED;
+  cursor: pointer;
+}
+
+#phinishphish-boxDisplay image:hover {
+  border-color: #CCCCCC;
+}
+
+#phinishphish-boxDisplay column {
+  margin: 0 10px;
+}
+
+#phinishphish-boxProgress {
+  opacity: 0.3;
+  font-size: x-large;
+}
+
+#phinishphish-title {
+  margin-top: 10px;
+  font-size: large;
+}
+
+#phinishphish-statusBar {
+  padding-right: 0;
+}
+
+#pp-searchInput {
+  display: block;
+  width: 100%;
+  font-size: large;
+}
+
+label > label {
+  margin: 0;
+  padding: 0;
+}
+
+.em {
+  font-weight: bold;
+}
