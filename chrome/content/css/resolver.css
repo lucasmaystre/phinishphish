@@ -1,10 +1,19 @@
+#pp-iconContainer {
+  width: 72px;
+  height: 72px;
+}
+
+#pp-icon {
+  -moz-margin-end: 0;
+}
+
 #pp-searchBox {
   margin: 30px 40px;
   padding: 20px;
 }
 
 #phinishphish-header,
-#phinishphish-selectorHeader {
+#pp-selectorHeader {
   border-bottom: 2px groove white;
 }
 

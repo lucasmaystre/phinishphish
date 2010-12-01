@@ -29,7 +29,9 @@
 
     <!-- The static header -->
     <hbox id="phinishphish-header">
-      <image class="question-icon" />
+      <vbox align="center" valign="middle" pack="center" id="pp-iconContainer">
+        <image id="pp-icon" class="question-icon" />
+      </vbox>
       <vbox flex="1">
         <label id="phinishphish-title">
           Who do you think you are talking to ?
@@ -65,9 +67,9 @@
       
       <!-- Entity selector. -->
       <vbox id="phinishphish-boxSelector">
-        <hbox id="phinishphish-selectorHeader">
-          <label>Your query was : <label class="em">paypel</label>
-          (<label href="#" class="text-link" value="change" />).
+        <hbox id="pp-selectorHeader">
+          <label>Your query was : <label class="em" id="pp-queryLabel">paypel</label>
+          (<label id="pp-changeQuery" class="text-link" value="change" />).
           Click on an image below:</label>
         </hbox>
 
@@ -91,7 +93,7 @@
       <statusbarpanel id="phinishphish-version" label="Phinishing Phishing v. 0.1" flex="1"/>
       <statusbarpanel id="pp-loadStatus" label="Loading..." />
       <statusbarpanel id="phinishphish-progressPanel">
-        <progressmeter id="pp-progressBar" mode="determined" value="100" />
+        <progressmeter id="pp-progressBar" mode="undetermined" />
       </statusbarpanel>
     </statusbar>
 

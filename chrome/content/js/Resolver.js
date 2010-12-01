@@ -13,7 +13,7 @@ phinishphish.Resolver = function() {
   this.state = null; // Current window state.
   this.lastQuery = ''; // Last entities query.
   this.lastEntities = new Array(); // Last array of entities received.
-  this.initiallyShownSelect = null; // True if the first screen was a selection.
+  this.hasSearched = false; // Defines behavior of click on 'other'.
 };
 
 phinishphish.Resolver.prototype.run = function() {
@@ -28,10 +28,8 @@ phinishphish.Resolver.prototype.run = function() {
 
 phinishphish.Resolver.prototype.handleInitialLookup = function(entities) {
   if (entities.length > 0) {
-    this.initiallyShownSelect = true;
     this.initSelect(entities);
   } else {
-    this.initiallyShownSelect = false;
     this.initSearch();
   }
 }
@@ -51,7 +49,7 @@ phinishphish.Resolver.prototype.initLoad = function(text) {
   this.mainDeck.setAttribute('selectedIndex',
       phinishphish.Resolver.STATE.load);
   this.elem('loadStatus').setAttribute('label', text);
-  this.elem('progressBar').setAttribute('mode', 'undetermined');
+  this.elem('progressBar').style.display = null;
 };
 
 phinishphish.Resolver.prototype.initSearch = function() {
@@ -67,7 +65,7 @@ phinishphish.Resolver.prototype.initSearch = function() {
 
   // Update the status and the progress bar.
   this.elem('loadStatus').setAttribute('label', 'Ready.');
-  this.elem('progressBar').setAttribute('mode', 'determined');
+  this.elem('progressBar').style.display = 'none';
 
   // Focus on the search bar.
   this.elem('searchInput').focus();
@@ -94,6 +92,7 @@ phinishphish.Resolver.prototype.handleSearch = function() {
       window.alert('Your query is too short. The minimum 2 characters.');
     } else {
       this.lastQuery = query;
+      this.hasSearched = true;
       this.initLoad('Searching...');
       this.entityProv.lookup(query, phinishphish.bind(this, this.initSelect));
     }
@@ -101,6 +100,12 @@ phinishphish.Resolver.prototype.handleSearch = function() {
 };
 
 phinishphish.Resolver.prototype.initSelect = function(entities) {
+  if (this.hasSearched) {
+    this.elem('selectorHeader').style.display = null;
+    this.elem('queryLabel').value = this.lastQuery;
+  } else {
+    this.elem('selectorHeader').style.display = 'none';
+  }
   // Set the current state.
   this.state = phinishphish.Resolver.STATE.select;
   this.lastEntities = entities;
@@ -148,7 +153,7 @@ phinishphish.Resolver.prototype.initSelect = function(entities) {
 
   // Update the status and the progress bar.
   this.elem('loadStatus').setAttribute('label', 'Ready.');
-  this.elem('progressBar').setAttribute('mode', 'determined');
+  this.elem('progressBar').style.display = 'none';
 };
 
 phinishphish.Resolver.prototype.handleSelect = function(event) {
@@ -159,17 +164,19 @@ phinishphish.Resolver.prototype.handleSelect = function(event) {
   var id = parseInt(elem.getAttribute('id').substring(7)); // Strip 'pp-col-'.
   phinishphish.log('clicked on col with id=' + id);
   var match = false; // True if the user's intention matches.
+  var entity = null; // The entity on which he clicked.
   if (id == -1) { // 'other' was selected.
-    if (this.initiallyShownSelect) {
+    if (!this.hasSearched) {
       this.initSearch();
       return;
     } else {
       // This happens when a website is not in the database. At least we know
       // that it's not forging one of the entities in the database.
+      // TODO There's one corner case: the user clicked on 'other' although the
+      // hostname matched with one of the entities. We should deny this?
       match = true;
     }
   } else { // Click on an entity returned by the Entity API.
-    var entity = null;
     for (var i = 0; i < this.lastEntities.length; ++i) {
       if (this.lastEntities[i].id == id) {
         entity = this.lastEntities[i];
@@ -188,7 +195,13 @@ phinishphish.Resolver.prototype.handleSelect = function(event) {
   }
 
   // Send the result of the resolution to the SpoofBlocker.
-  var payload = encodeURI(this.targetHost) + '|' + encodeURI(match.toString());
+  var outcome = {
+    'hostname' : this.targetHost,
+    'isAllowed': match,
+    'intention': entity
+  }
+  var nativeJSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);  
+  var payload = nativeJSON.encode(outcome);
 
   var obsService = Components.classes["@mozilla.org/observer-service;1"]
       .getService(Components.interfaces.nsIObserverService);
@@ -210,6 +223,8 @@ phinishphish.Resolver.prototype.listen = function() {
 
   this.elem('col--1').addEventListener('click', phinishphish.bind(
       this, this.handleSelect), false);
+  this.elem('changeQuery').addEventListener('click', phinishphish.bind(
+      this, this.initSearch), false);
 
   document.getElementById('phinishphish-buttonProgress')
       .addEventListener('click', phinishphish.bind(

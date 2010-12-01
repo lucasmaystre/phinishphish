@@ -1,0 +1,49 @@
+body {
+  margin-top: 30px;
+  font: message-box;
+  background-color: #772222;
+  font-size: small;
+}
+
+h1 {
+  margin: 0 0 10px 0;
+  padding: 0 0 0 40px;
+  background: url('../logo.png') no-repeat;
+}
+
+div#container {
+  background-color: #FFFFFF;
+  color: #333333;
+  margin: auto;
+  padding: 20px;
+  width: 600px;
+  -moz-border-radius: 10px;
+}
+
+span.entity-name {
+  background-color: #F8F3CC;
+  border: 1px solid #CCCCCC;
+  padding: 0 3px;
+  margin: 0 1px;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+div#explanation {
+  font-size: medium;
+  line-height: 1.5;
+}
+
+form#search-form {
+  padding: 20px;
+  margin: 10px 0 0 0;
+  background-color: #EDEDED;
+}
+
+li {
+  margin-top: 10px;
+}
+
+ul {
+  margin-bottom: 0;
+}

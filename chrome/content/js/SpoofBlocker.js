@@ -35,10 +35,11 @@ phinishphish.SpoofBlocker.prototype.run = function() {
   obsService.addObserver(
       resolutionObserver, 'phinishphish-resolution-complete',false);
 
-  // Listens to click on the status bar.
-  document.getElementById('phinishphish-sbp').addEventListener('click',
-      phinishphish.bind(this, this.resolve), false);
-  // TODO Start to listen to requests.
+  // Listens to click on the status bar. TODO Remove.
+  //document.getElementById('phinishphish-sbp').addEventListener('click',
+  //    phinishphish.bind(this, this.resolve), false);
+
+  // Start listening to requests.
   this.reqObserver = new phinishphish.ReqObserver(
       phinishphish.bind(this, this.handleRequest));
 
@@ -134,9 +135,10 @@ phinishphish.SpoofBlocker.prototype.handleRequest = function(httpChannel) {
       
       var overlay = phinishphish.SpoofBlocker.drawOverlay(domWin.document);
 
-      var isAllowed = this.resolve(hostname);
-      if (!isAllowed) {
+      var outcome = this.resolve(hostname);
+      if (!outcome.isAllowed) {
         httpChannel.cancel(Components.results.NS_BINDING_ABORTED);
+        this.handleDenial(domWin, outcome.intention);
       } else { // Resolution has suceeded.
         overlay.parentNode.removeChild(overlay);
         this.showPopup(3000);
@@ -146,12 +148,29 @@ phinishphish.SpoofBlocker.prototype.handleRequest = function(httpChannel) {
   }
 };
 
+phinishphish.SpoofBlocker.prototype.handleDenial = function(win, intention) {
+  var redirect = 'chrome://phinishphish/content/deny.htm'
+  if (intention) { // This can be null (when the user clicked on 'other').
+    var primaryName = '';
+    for (var i = 0; i < intention.domains.length; ++i) {
+      if (intention.domains[i].isPrimary) {
+        primaryName = intention.domains[i].name;
+        break;
+      }
+    }
+    redirect = redirect
+        + '?entity=' + encodeURI(intention.shortName)
+        + '&domain=' + encodeURI(primaryName);
+  }
+  win.location = redirect;
+};
+
 phinishphish.SpoofBlocker.prototype.showPopup = function(duration) {
   document.getElementById('phinishphish-notice')
       .openPopup(document.getElementById('phinishphish-sbp'), 'before_end');
   setTimeout(phinishphish.bind(document.getElementById('phinishphish-notice'),
       document.getElementById('phinishphish-notice').hidePopup), duration);
-}
+};
 
 phinishphish.SpoofBlocker.drawOverlay = function(doc) {
   if (!(doc instanceof HTMLDocument)) {
@@ -182,25 +201,24 @@ phinishphish.SpoofBlocker.prototype.resolve = function(hostname) {
   this.pending[hostname] = null;
 
   // Open the resolution window. The 'modal' option makes the call blocking.
-  while (typeof(this.pending[hostname]) != 'boolean') {
+  while (this.pending[hostname] == null) {
     var url = 'chrome://phinishphish/content/resolver.xul?target='
         + encodeURI(hostname);
-    var options = 'chrome,modal,centerscreen,width=550,height=330'; //close=no
-    window.open(url, 'resolve', options);
+    var options = 'chrome,close=no,modal,centerscreen,width=550,height=330';
+    window.open(url, 'resolver', options);
   }
 
-  var isAllowed = this.pending[hostname];
+  var outcome = this.pending[hostname];
   delete this.pending[hostname]; // Not pending anymore.
-  return isAllowed;
+  return outcome;
 };
 
 phinishphish.SpoofBlocker.prototype.receiveMessage = function(data) {
   phinishphish.log('received message: ' + data);
-  var separator = data.indexOf('|');
-  var hostname = decodeURI(data.substring(0, separator));
-  var allow = decodeURI(data.substring(separator + 1));
+  var nativeJSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);  
+  var outcome = nativeJSON.decode(decodeURI(data));
 
-  if (this.pending[hostname] !== undefined) {
-    this.pending[hostname] = (allow == 'true');
+  if (this.pending[outcome.hostname] !== undefined) {
+    this.pending[outcome.hostname] = outcome;
   }
 };

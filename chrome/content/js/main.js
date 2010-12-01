@@ -40,7 +40,7 @@ phinishphish.param = function(url, param) {
   var query = url.substring(startQuery + 1);
   if (query.length <= 0) return null;
 
-  var param = param + '=';
+  param = param + '=';
   var begin = query.indexOf(param);
   if (begin > -1) {
     begin += param.length;
