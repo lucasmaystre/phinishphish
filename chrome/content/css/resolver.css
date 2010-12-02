@@ -22,12 +22,12 @@
 }
 
 #phinishphish-boxDisplay image {
-  border: 3px solid #EDEDED;
+  border: 3px solid #DDDDDD;
   cursor: pointer;
 }
 
 #phinishphish-boxDisplay image:hover {
-  border-color: #CCCCCC;
+  border-color: #BBBBBB;
 }
 
 #phinishphish-boxDisplay column {

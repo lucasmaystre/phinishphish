@@ -55,6 +55,7 @@ phinishphish.EntityProvider.prototype.lookup = function(query, callback) {
   if (this.cache.getItem(query) != null) {
     if (callback) {
       callback.call(null, this.cache.getItem(query));
+      return;
     }
   }
 
@@ -74,6 +75,7 @@ phinishphish.EntityProvider.prototype.lookup = function(query, callback) {
           }
           if (callback) {
             callback.call(null, entities);
+            return;
           }
         }
       });

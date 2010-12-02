@@ -1,4 +1,7 @@
-/** Serves as global namespace for the extension. */
+Components.utils.import("resource://phinishphish/namespace.js");
+Components.utils.import("resource://phinishphish/globals.js");
+
+// Serves as global namespace for the extension.
 // The condition prevents resetting if included multiple times.
 if ('undefined' == typeof(phinishphish)) { 
   var phinishphish = {};
@@ -52,3 +55,9 @@ phinishphish.param = function(url, param) {
   }
   return null; // Parameter was not found.
 };
+
+/** Simple wrapper around the tracing function provided by the module. */
+phinishphish.trace = function(event, data) {
+  PPModules.trace(event, data);
+  phinishphish.log('traced event "' + event + '" with data "' + data + '"');
+}

@@ -49,7 +49,7 @@
       
       <!-- Progressmeter. -->
       <vbox id="phinishphish-boxProgress" align="center" valign="middle">
-        Loading...
+        <label>Loading...</label>
       </vbox>
       
       <!-- Input field. -->
@@ -90,7 +90,7 @@
 
     <!-- The status bar. -->
     <statusbar id="phinishphish-statusBar">
-      <statusbarpanel id="phinishphish-version" label="Phinishing Phishing v. 0.1" flex="1"/>
+      <statusbarpanel id="phinishphish-version" label="Phinishing Phishing v. 1.0" flex="1"/>
       <statusbarpanel id="pp-loadStatus" label="Loading..." />
       <statusbarpanel id="phinishphish-progressPanel">
         <progressmeter id="pp-progressBar" mode="undetermined" />
@@ -98,12 +98,12 @@
     </statusbar>
 
     <!-- A box with buttons for developement purposes. -->
-    <!-- -->
+    <!--
     <hbox>
       <button id="phinishphish-buttonProgress" label="Progress" />
       <button id="phinishphish-buttonInput" label="Input" />
       <button id="phinishphish-buttonSelector" label="Selector" />
     </hbox>
-    <!-- -->
+    -->
   </vbox> <!-- END main container box. -->
 </window>

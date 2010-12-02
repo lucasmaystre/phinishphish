@@ -43,6 +43,7 @@ phinishphish.TrustProvider.prototype.lookup = function(target, callback, sync) {
     } else {
       if (callback) {
         callback.call(null, this.isTrusted(this.cache.getItem(target)));
+        return;
       }
     }
   }
@@ -73,6 +74,7 @@ phinishphish.TrustProvider.prototype.lookup = function(target, callback, sync) {
           } else {
             if (callback) {
               callback.call(null, isTrusted);
+              return;
             }
           }
         }

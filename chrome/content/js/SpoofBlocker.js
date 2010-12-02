@@ -35,6 +35,9 @@ phinishphish.SpoofBlocker.prototype.run = function() {
   obsService.addObserver(
       resolutionObserver, 'phinishphish-resolution-complete',false);
 
+  // Trace the call.
+  phinishphish.trace('load', '');
+
   // Listens to click on the status bar. TODO Remove.
   //document.getElementById('phinishphish-sbp').addEventListener('click',
   //    phinishphish.bind(this, this.resolve), false);
@@ -56,7 +59,7 @@ phinishphish.SpoofBlocker.prototype.run = function() {
 phinishphish.SpoofBlocker.prototype.handlePageUnload = function(event) {
   var win = event.originalTarget.defaultView;
   this.dirtyWindows.remove(win);
-}
+};
 
 // TODO how does our extension deal with frames ?
 phinishphish.SpoofBlocker.prototype.handlePageLoad = function(event) {

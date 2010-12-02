@@ -25,11 +25,11 @@
   <!-- The status bar indicator. -->
   <statusbar id="status-bar">
     <statusbarpanel id="phinishphish-sbp" insertafter="statusbar-progresspanel">
-      <label>PP</label>
+      <label>PProtected</label>
     </statusbarpanel>
 
     <panel id="phinishphish-notice">
-      <label value="Resolution succeeded!" />
+      <label id="phinishphish-successLabel" value="OK, got it. Thanks !" />
     </panel>
 
   </statusbar>

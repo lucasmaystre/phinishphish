@@ -1,4 +1,13 @@
 #phinishphish-notice {
-  font-size: medium;
-  padding: 20px;
+  padding: 10px;
+  font-size: small;
+}
+
+#phinishphish-successLabel {
+  background: url('../img/accept.png') no-repeat;
+  padding-left: 24px;
+}
+
+#phinishphish-sbp label {
+  font-weight: bold;
 }

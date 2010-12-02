@@ -18,6 +18,7 @@ phinishphish.Resolver = function() {
 
 phinishphish.Resolver.prototype.run = function() {
   this.targetHost = phinishphish.param(window.location.toString(), 'target');
+  phinishphish.trace('resolve', this.targetHost)
   // Handle the case where the window is improperly called with no host.
   this.targetHost = this.targetHost == null ? '' : this.targetHost;
   this.listen();
@@ -70,18 +71,7 @@ phinishphish.Resolver.prototype.initSearch = function() {
   // Focus on the search bar.
   this.elem('searchInput').focus();
 
-  // Catch when user presses 'enter'.
-  this.elem('searchInput').addEventListener('keypress', phinishphish.bind(this,
-      function(e) {
-         if (e.keyCode == KeyEvent.DOM_VK_RETURN
-             || e.keyCode == KeyEvent.DOM_VK_ENTER) {
-           this.handleSearch();
-         }
-      }), false);
 
-  // Catch when user presses 'search'.
-  this.elem('searchButton').addEventListener('command',
-      phinishphish.bind(this, this.handleSearch), false);
 };
 
 phinishphish.Resolver.prototype.handleSearch = function() {
@@ -89,7 +79,10 @@ phinishphish.Resolver.prototype.handleSearch = function() {
   if (this.state = phinishphish.Resolver.STATE.search) {
     var query = this.elem('searchInput').value;
     if (query.length < 2) {
-      window.alert('Your query is too short. The minimum 2 characters.');
+      var promptService = Cc["@mozilla.org/embedcomp/prompt-service;1"]
+          .getService(Ci.nsIPromptService);
+      promptService.alert(window, 'Your query is too short.',
+          'Enter at least 2 characters.');
     } else {
       this.lastQuery = query;
       this.hasSearched = true;
@@ -117,6 +110,9 @@ phinishphish.Resolver.prototype.initSelect = function(entities) {
     if (candidate.tagName == 'column'
         && candidate.getAttribute('id') != 'pp-col--1') {
       this.elem('selectCols').removeChild(candidate);
+      // This comes from the fact that 'candidates' references to a set of
+      // children that is changing when we delete one of them.
+      --i;
     }
   }
 
@@ -211,6 +207,9 @@ phinishphish.Resolver.prototype.handleSelect = function(event) {
   obsService.notifyObservers(
       subject, "phinishphish-resolution-complete", payload);
 
+  // Trace the resolution.
+  phinishphish.trace('select', id);
+
   // Resolution completed, we can close the window.
   window.close();
 };
@@ -226,13 +225,26 @@ phinishphish.Resolver.prototype.listen = function() {
   this.elem('changeQuery').addEventListener('click', phinishphish.bind(
       this, this.initSearch), false);
 
-  document.getElementById('phinishphish-buttonProgress')
-      .addEventListener('click', phinishphish.bind(
-          this, this.initLoad, 'Initializing...'), false);
-  document.getElementById('phinishphish-buttonInput')
-      .addEventListener('click', phinishphish.bind(
-          this, this.initSearch), false);
-  document.getElementById('phinishphish-buttonSelector')
-      .addEventListener('click', phinishphish.bind(
-          this, this.initSelect, []), false);
+  // Catch when user presses 'search'.
+  this.elem('searchButton').addEventListener('command',
+      phinishphish.bind(this, this.handleSearch), false);
+
+  // Listen to key press on the search input field.
+  this.elem('searchInput').addEventListener('keypress', phinishphish.bind(this,
+      function(e) {
+         if (e.keyCode == KeyEvent.DOM_VK_RETURN
+             || e.keyCode == KeyEvent.DOM_VK_ENTER) {
+           this.handleSearch();
+         }
+      }), false);
+
+  // document.getElementById('phinishphish-buttonProgress')
+  //     .addEventListener('click', phinishphish.bind(
+  //         this, this.initLoad, 'Initializing...'), false);
+  // document.getElementById('phinishphish-buttonInput')
+  //     .addEventListener('click', phinishphish.bind(
+  //         this, this.initSearch), false);
+  // document.getElementById('phinishphish-buttonSelector')
+  //     .addEventListener('click', phinishphish.bind(
+  //         this, this.initSelect, []), false);
 };

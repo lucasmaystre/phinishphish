@@ -4,10 +4,10 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>phinishphish@lucas.maystre.ch</em:id>
     
-    <em:version>0.1</em:version>
+    <em:version>1.0a1</em:version>
     <em:iconURL>chrome://phinishphish/content/logo.png</em:iconURL>
 
-    <em:name>Phinishing Phishing</em:name>
+    <em:name>PProtection</em:name>
 
     <em:description>
       Filling the gap between the browser and your mind.
