@@ -86,6 +86,17 @@
         </vbox>
 
       </vbox>
+
+      <!-- Message displayed when no entities found. -->
+      <vbox flex="1" pack="center" align="center" id="pp-boxUnknown">
+
+        <label id="pp-unknownTitle" class="em">We don't know this website yet.</label>
+        <label id="pp-unknownText">You can continue, but stay careful.</label>
+
+        <label id="pp-unknownTime">
+          This window will close itself in <label id="pp-unknownSec" value="2" /> seconds.
+        </label>
+      </vbox>
     </deck>
 
     <!-- The status bar. -->
@@ -103,6 +114,7 @@
       <button id="phinishphish-buttonProgress" label="Progress" />
       <button id="phinishphish-buttonInput" label="Input" />
       <button id="phinishphish-buttonSelector" label="Selector" />
+      <button id="phinishphish-buttonUnknown" label="Unknown" />
     </hbox>
     -->
   </vbox> <!-- END main container box. -->

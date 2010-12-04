@@ -59,7 +59,7 @@ phinishphish.EntityProvider.prototype.lookup = function(query, callback) {
     }
   }
 
-  var url = phinishphish.EntityProvider.URL_PREFIX + query;
+  var url = phinishphish.EntityProvider.URL_PREFIX + encodeURI(query);
   var req = new XMLHttpRequest();
   req.open('GET', url, true); // Asynchronous request.
 

@@ -17,7 +17,21 @@
   border-bottom: 2px groove white;
 }
 
-#phinishphish-boxDisplay {
+#pp-unknownTitle, #pp-unknownText {
+  color: #333333;
+  font-size: medium;
+}
+
+#pp-unknownTime {
+  color: #666666;
+  margin-top: 20px;
+}
+
+#pp-boxUnknown {
+  cursor: pointer;
+}
+
+#phinishphish-boxDisplay, #pp-boxUnknown {
   background-color: white;
 }
 

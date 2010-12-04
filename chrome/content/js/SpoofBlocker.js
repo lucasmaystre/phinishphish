@@ -36,11 +36,11 @@ phinishphish.SpoofBlocker.prototype.run = function() {
       resolutionObserver, 'phinishphish-resolution-complete',false);
 
   // Trace the call.
-  phinishphish.trace('load', '');
+  phinishphish.trace('load', window.navigator.userAgent);
 
   // Listens to click on the status bar. TODO Remove.
-  //document.getElementById('phinishphish-sbp').addEventListener('click',
-  //    phinishphish.bind(this, this.resolve), false);
+  document.getElementById('phinishphish-sbp').addEventListener('click',
+      phinishphish.bind(this, this.resolve), false);
 
   // Start listening to requests.
   this.reqObserver = new phinishphish.ReqObserver(
@@ -80,7 +80,10 @@ phinishphish.SpoofBlocker.prototype.handlePageLoad = function(event) {
     // Lookup trust and associated entities to cache them.
     try {
       this.trustProv.lookup(doc.defaultView.location.hostname);
-      this.entityProv.lookup(doc.defaultView.location.hostname);
+      // The next call is disabled for privacy purposed. It slows down the
+      // resolutions, but doesn't allow the Entity API to track all the
+      // hostnames the user visits.
+      // this.entityProv.lookup(doc.defaultView.location.hostname);
     } catch(err) {
       // An exception can be thrown when there is no hostname (e.g. a blank
       // page).
@@ -144,7 +147,11 @@ phinishphish.SpoofBlocker.prototype.handleRequest = function(httpChannel) {
         this.handleDenial(domWin, outcome.intention);
       } else { // Resolution has suceeded.
         overlay.parentNode.removeChild(overlay);
-        this.showPopup(3000);
+        // 'null' indicates an error during the resolution, and -1 means
+        // 'other'.
+        if (outcome.intention != null && outcome.inention.id != -1) {
+          this.showPopup(3000);
+        }
       }
     }
     this.dirtyWindows.remove(domWin);
@@ -207,8 +214,18 @@ phinishphish.SpoofBlocker.prototype.resolve = function(hostname) {
   while (this.pending[hostname] == null) {
     var url = 'chrome://phinishphish/content/resolver.xul?target='
         + encodeURI(hostname);
-    var options = 'chrome,close=no,modal,centerscreen,width=550,height=330';
-    window.open(url, 'resolver', options);
+    var options = 'chrome,modal,centerscreen,width=550,height=330';//TODO close=no,
+    try {
+      window.open(url, 'resolver', options);
+    } catch(err) {
+      phinishphish.log('there was a problem while opening the window:' + err);
+      // TODO We just return a fake positive resolution outcome, to mask this
+      // error. This is DANGEROUS but heck, it's a prototype!
+      // A 'null' intention indicates that the resolution has failed.
+      this.pending[hostname] =
+          {'hostname': hostname, 'isAllowed': true, 'intention': null};
+      phinishphish.trace('error', hostname);
+    }
   }
 
   var outcome = this.pending[hostname];

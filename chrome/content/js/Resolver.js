@@ -36,7 +36,8 @@ phinishphish.Resolver.prototype.handleInitialLookup = function(entities) {
 }
 
 /** The different states of the window. */
-phinishphish.Resolver.STATE = {'load': 0, 'search': 1, 'select': 2};
+phinishphish.Resolver.STATE =
+    {'load': 0, 'search': 1, 'select': 2, 'unknown': 3};
 
 /** Shortcut to get an element by its ID. */
 phinishphish.Resolver.prototype.elem = function(id) {
@@ -116,6 +117,12 @@ phinishphish.Resolver.prototype.initSelect = function(entities) {
     }
   }
 
+  // Handle the case where we didn't find anything.
+  if (entities.length == 0) {
+    this.initUnknown();
+    return;
+  }
+
   // Display the new entities.
   for (var i = 0; i < entities.length; ++i) {
     var entity = entities[i];
@@ -152,6 +159,39 @@ phinishphish.Resolver.prototype.initSelect = function(entities) {
   this.elem('progressBar').style.display = 'none';
 };
 
+phinishphish.Resolver.prototype.initUnknown = function() {
+  // Set the current state.
+  this.state = phinishphish.Resolver.STATE.unknown;
+
+  // Display the 'select' panel.
+  this.mainDeck.setAttribute('selectedIndex',
+      phinishphish.Resolver.STATE.unknown);
+
+  // Update the status and the progress bar.
+  this.elem('loadStatus').setAttribute('label', 'Ready.');
+  this.elem('progressBar').style.display = 'none';
+
+  // Notify the spoof blocker of the resolution, and trace it.
+  this.notifyOutcome({
+    'hostname' : this.targetHost,
+    'isAllowed': true,
+    'intention': {'id': -1} // -1 means 'other'.
+  });
+  phinishphish.trace('select', -1);
+
+  // Initiate the countdown.
+  var intervalId = setInterval(phinishphish.bind(this,
+      function() {
+        var remaining = this.elem('unknownSec').value;
+        if (remaining == 0) { // Countdown is over.
+          window.close();
+        } else {
+          // Decrement counter by 1.
+          this.elem('unknownSec').value = remaining - 1;
+        }
+      }), 1000); // Every second.
+};
+
 phinishphish.Resolver.prototype.handleSelect = function(event) {
   var elem = event.originalTarget;
   if (!elem.hasAttribute('id')) {
@@ -170,7 +210,8 @@ phinishphish.Resolver.prototype.handleSelect = function(event) {
       // that it's not forging one of the entities in the database.
       // TODO There's one corner case: the user clicked on 'other' although the
       // hostname matched with one of the entities. We should deny this?
-      match = true;
+      this.initUnknown();
+      return;
     }
   } else { // Click on an entity returned by the Entity API.
     for (var i = 0; i < this.lastEntities.length; ++i) {
@@ -191,11 +232,20 @@ phinishphish.Resolver.prototype.handleSelect = function(event) {
   }
 
   // Send the result of the resolution to the SpoofBlocker.
-  var outcome = {
+  this.notifyOutcome({
     'hostname' : this.targetHost,
     'isAllowed': match,
     'intention': entity
-  }
+  });
+
+  // Trace the resolution.
+  phinishphish.trace('select', id);
+
+  // Resolution completed, we can close the window.
+  window.close();
+};
+
+phinishphish.Resolver.prototype.notifyOutcome = function(outcome) {
   var nativeJSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);  
   var payload = nativeJSON.encode(outcome);
 
@@ -206,12 +256,6 @@ phinishphish.Resolver.prototype.handleSelect = function(event) {
   subject.data = "Resolution is complete.";
   obsService.notifyObservers(
       subject, "phinishphish-resolution-complete", payload);
-
-  // Trace the resolution.
-  phinishphish.trace('select', id);
-
-  // Resolution completed, we can close the window.
-  window.close();
 };
 
 /**
@@ -224,6 +268,10 @@ phinishphish.Resolver.prototype.listen = function() {
       this, this.handleSelect), false);
   this.elem('changeQuery').addEventListener('click', phinishphish.bind(
       this, this.initSearch), false);
+
+  // When disyplaying 'unknown', a click anywhere on the window closes it.
+  this.elem('boxUnknown').addEventListener('click',
+      function() {window.close()}, false);
 
   // Catch when user presses 'search'.
   this.elem('searchButton').addEventListener('command',
@@ -247,4 +295,7 @@ phinishphish.Resolver.prototype.listen = function() {
   // document.getElementById('phinishphish-buttonSelector')
   //     .addEventListener('click', phinishphish.bind(
   //         this, this.initSelect, []), false);
+  // document.getElementById('phinishphish-buttonUnknown')
+  //     .addEventListener('click', phinishphish.bind(
+  //         this, this.initUnknown), false);
 };

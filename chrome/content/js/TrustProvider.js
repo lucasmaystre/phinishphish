@@ -48,7 +48,7 @@ phinishphish.TrustProvider.prototype.lookup = function(target, callback, sync) {
     }
   }
 
-  var url = phinishphish.TrustProvider.URL_PREFIX + target;
+  var url = phinishphish.TrustProvider.URL_PREFIX + encodeURI(target);
   var req = new XMLHttpRequest();
   if (sync) {
     req.open('GET', url, false); // Synchronous request.
