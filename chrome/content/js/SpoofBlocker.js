@@ -10,6 +10,7 @@ phinishphish.SpoofBlocker = function() {
   this.entityProv = new phinishphish.EntityProvider();
   this.trustProv = new phinishphish.TrustProvider();
   this.reqObserver = null;
+  this.resObserver = null;
 
   // Set storing the windows which contain user input.
   this.dirtyWindows = new phinishphish.Set();
@@ -22,29 +23,24 @@ phinishphish.SpoofBlocker = function() {
  * Starts the anti-phishing mechanism.
  */
 phinishphish.SpoofBlocker.prototype.run = function() {
-  var that = this;
-  var resolutionObserver = {
-      observe : function(subject, topic, data) {
-          if (topic == "phinishphish-resolution-complete") {
-            that.receiveMessage(data);
-          }
-      }};
-  // TODO: deregister at some point? same for reqobserver
-  var obsService = Cc["@mozilla.org/observer-service;1"]
-      .getService(Ci.nsIObserverService);
-  obsService.addObserver(
-      resolutionObserver, 'phinishphish-resolution-complete',false);
-
   // Trace the call.
   phinishphish.trace('load', window.navigator.userAgent);
 
   // Listens to click on the status bar. TODO Remove.
-  document.getElementById('phinishphish-sbp').addEventListener('click',
-      phinishphish.bind(this, this.resolve), false);
+  //document.getElementById('phinishphish-sbp').addEventListener('click',
+  //    phinishphish.bind(this, this.resolve), false);
 
   // Start listening to requests.
   this.reqObserver = new phinishphish.ReqObserver(
       phinishphish.bind(this, this.handleRequest));
+  //window.addEventListener('unload', // TODO Doesn't work.
+  //    phinishphish.bind(this, this.reqObserver.unregister), true);
+
+  // Listen to resolutions from the resolver.
+  this.resObserver = new phinishphish.ResObserver(
+      phinishphish.bind(this, this.receiveMessage));
+  //window.addEventListener('unload', // TODO Doesn't work.
+  //    phinishphish.bind(this, this.resObserver.unregister), true);
 
   // Listen to load events to add listeners to input fields
   gBrowser.addEventListener('load',
@@ -214,7 +210,7 @@ phinishphish.SpoofBlocker.prototype.resolve = function(hostname) {
   while (this.pending[hostname] == null) {
     var url = 'chrome://phinishphish/content/resolver.xul?target='
         + encodeURI(hostname);
-    var options = 'chrome,modal,centerscreen,width=550,height=330';//TODO close=no,
+    var options = 'chrome,close=no,modal,centerscreen,width=550,height=330';
     try {
       window.open(url, 'resolver', options);
     } catch(err) {

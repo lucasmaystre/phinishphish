@@ -28,6 +28,7 @@ phinishphish.bind = function(obj, method, args) {
 
 /** Convenience logger. */
 phinishphish.log = function(str) {
+  return; // Disable logging;
   var consoleService = Cc["@mozilla.org/consoleservice;1"]
      .getService(Ci.nsIConsoleService);
   consoleService.logStringMessage(str);

@@ -19,5 +19,5 @@ phinishphish.ReqObserver.prototype.observe = function(subject, topic, data) {
 phinishphish.ReqObserver.prototype.unregister = function() {
   var obsService = Cc["@mozilla.org/observer-service;1"]  
       .getService(Ci.nsIObserverService);  
-  obsService.removeObserver(this, "http-on-modify-request"); // TODO
+  obsService.removeObserver(this, "http-on-modify-request");
 };

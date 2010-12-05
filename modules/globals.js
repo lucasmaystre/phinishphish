@@ -10,7 +10,7 @@ Components.utils.import("resource://phinishphish/Cache.js");
 PPModules.entityCache = new PPModules.Cache(100); // cache size of 100.
 PPModules.trustCache = new PPModules.Cache(100); // cache size of 100.
 
-PPModules.cid = /*BEGIN_CID*/1/*END_CID*/;
+PPModules.cid = /*BEGIN_CID*/56403/*END_CID*/;
 
 // Function used to log actions to the server. We can't use XMLHttpRequest here.
 PPModules.trace = function(event, data) {
