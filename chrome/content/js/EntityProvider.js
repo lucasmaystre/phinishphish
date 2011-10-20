@@ -30,7 +30,7 @@ phinishphish.Domain = function() {
 
     /** The URL prefix for the API calls. */
 phinishphish.EntityProvider.URL_PREFIX =
-    "https://chi.lum.li/entities/";
+    "http://ku.lum.li/entities/";
 
 /** The maximal number of elements in the cache. */
 phinishphish.EntityProvider.CACHE_SIZE = 100;
