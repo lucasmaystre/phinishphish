@@ -37,19 +37,6 @@ phinishphish.TrustProvider.exp = function() {
 phinishphish.TrustProvider.prototype.lookup = function(target, callback, sync) {
   phinishphish.log('call to lookup: target=' + target);
 
-  // Small manual override to avoid annoyances for Guillaume + Molly + Guillaume
-  // TODO potential security hole (e.g. www.unil.ch.spoof.com)
-  if (target.indexOf('unil.ch') != -1
-      || target.indexOf('data.coremetrics.com') != -1) {
-    if (sync) {
-      return true;
-    } else {
-      if (callback) {
-        callback.call(null, true);
-      }
-    }
-  }
-
   // First, lookup the cache to see if we can speed things up.
   if (this.cache.getItem(target) != null) {
     if (sync) {
@@ -142,7 +129,7 @@ phinishphish.TrustProvider.prototype.isTrusted = function(trustLevels) {
   // Therefore, this is our reputation threshold.
   // For the confidence level, we choose (arbitrarily) the threshold at
   // 2/5 , which corresponds to a confidence of at least 12.
-  var isTrusted = (reputation >= 60); //&& (confidence >= 12); hack for Julia
+  var isTrusted = (reputation >= 60) && (confidence >= 12);
   phinishphish.log('isTrusted? ' + isTrusted);
   return isTrusted;
 };
