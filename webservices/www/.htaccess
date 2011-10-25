@@ -1,0 +1,6 @@
+Options +FollowSymLinks
+
+# Rewrite URL in a RESTful style.
+RewriteEngine on
+RewriteRule ^entities/(.*)$  query-entities.php?q=$1  [L]
+RewriteRule ^domains/(.*)$   query-domains.php?q=$1   [L]
