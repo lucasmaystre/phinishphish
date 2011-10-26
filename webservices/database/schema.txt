@@ -1,0 +1,31 @@
+CREATE TABLE entity (
+  id             BIGSERIAL PRIMARY KEY,
+  lname          TEXT NOT NULL,
+  sname          TEXT,
+  image_url      TEXT,
+  is_provider    BOOLEAN NOT NULL DEFAULT FALSE,
+  lname_sdx      TEXT NOT NULL,
+  sname_sdx      TEXT,
+  lname_nrm      TEXT NOT NULL,
+  sname_nrm      TEXT
+);
+
+CREATE TABLE domain (
+  id             BIGSERIAL PRIMARY KEY,
+  name           TEXT NOT NULL,
+  is_primary     BOOLEAN NOT NULL DEFAULT FALSE,
+  entity         BIGINT NOT NULL REFERENCES entity ON DELETE CASCADE,
+  name_sdx       TEXT NOT NULL
+);
+
+CREATE TABLE request (
+  id             BIGSERIAL PRIMARY KEY,
+  client_id      BIGINT NOT NULL,
+  query          TEXT NOT NULL,
+  req_time       TIMESTAMP DEFAULT now()
+);
+
+CREATE INDEX entity_lname_sdx_idx ON entity (lname_sdx);
+CREATE INDEX entity_sname_sdx_idx ON entity (sname_sdx);
+CREATE INDEX domain_entity_idx ON domain (entity);
+CREATE INDEX domain_name_sdx_idx ON domain (name_sdx);

@@ -1,0 +1,43 @@
+INSERT INTO entity (lname, sname, image_url,
+    lname_sdx, sname_sdx, lname_nrm, sname_nrm)
+    VALUES ('PayPal, Inc.', 'PayPal', 'http://ku.lum.li/img/paypal.png',
+    'P145', 'P140', 'paypalinc', 'paypal');
+INSERT INTO entity (lname, sname, image_url,
+    lname_sdx, sname_sdx, lname_nrm, sname_nrm)
+    VALUES ('Amazon.com, Inc.', 'Amazon.com', 'http://ku.lum.li/img/amazon.png',
+    'A525', 'A525', 'amazoncominc', 'amazoncom');
+INSERT INTO entity (lname, sname, image_url,
+    lname_sdx, sname_sdx, lname_nrm, sname_nrm)
+    VALUES ('Bank of the West', 'Bank of the West', 'http://ku.lum.li/img/botw.png',
+    'B521', 'B521', 'bankofthewest', 'bankofthewest');
+INSERT INTO entity (lname, sname, image_url,
+    lname_sdx, sname_sdx, lname_nrm, sname_nrm)
+    VALUES ('Chase Bank USA, National Association', 'Chase', 'http://ku.lum.li/img/chase.png',
+    'C215', 'C200', 'chasebankusanationalassociation', 'chase');
+INSERT INTO entity (lname, sname, image_url,
+    lname_sdx, sname_sdx, lname_nrm, sname_nrm)
+    VALUES ('La famille Maystre', 'Maystre', 'http://ku.lum.li/img/maystre.png',
+    'L154', 'M236', 'lafamillemaystre', 'maystre');
+INSERT INTO entity (lname, sname, image_url,
+    lname_sdx, sname_sdx, lname_nrm, sname_nrm)
+    VALUES ('Twitter', 'Twitter', 'http://ku.lum.li/img/twitter.png',
+    'T360', 'T360', 'twitter', 'twitter');
+INSERT INTO entity (lname, sname, image_url,
+    lname_sdx, sname_sdx, lname_nrm, sname_nrm)
+    VALUES ('LinkedIn Corporation', 'LinkedIn', 'http://ku.lum.li/img/linkedin.png',
+    'L523', 'L523', 'linkedincorporation', 'linkedin');
+
+INSERT INTO domain (name, entity, is_primary, name_sdx)
+    VALUES ('paypal.com', 1, true, 'P142');
+INSERT INTO domain (name, entity, is_primary, name_sdx)
+    VALUES ('amazon.com', 2, true, 'A525');
+INSERT INTO domain (name, entity, is_primary, name_sdx)
+    VALUES ('bankofthewest.com', 3, true, 'B521');
+INSERT INTO domain (name, entity, is_primary, name_sdx)
+    VALUES ('chase.com', 4, true, 'C225');
+INSERT INTO domain (name, entity, is_primary, name_sdx)
+    VALUES ('www.maystre.ch', 5, true, 'W523');
+INSERT INTO domain (name, entity, is_primary, name_sdx)
+    VALUES ('twitter.com', 6, true, 'T362');
+INSERT INTO domain (name, entity, is_primary, name_sdx)
+    VALUES ('linkedin.com', 7, true, 'L523');

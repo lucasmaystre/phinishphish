@@ -1,0 +1,3 @@
+DROP TABLE entity CASCADE;
+DROP TABLE domain;
+DROP TABLE request;
