@@ -1,6 +1,7 @@
 <?php
+require_once 'Search.php';
 
-class GoogleSearch {
+class GoogleSearch extends Search {
   public static $DEFAULT_FIELDS =
       'items(title,link,displayLink),queries(request)';
 
@@ -8,34 +9,45 @@ class GoogleSearch {
   private static $CSE_ID = '002908917518209071168:pili1ryr1zw';
   private static $URL_BASE = 'https://www.googleapis.com/customsearch/v1';
 
-  private $params = array();
-
   public function __construct() {
-    $this->params['key'] = self::$API_KEY;
-    $this->params['cx'] = self::$CSE_ID;
-    $this->params['fields'] = self::$DEFAULT_FIELDS;
-  }
-
-  private function getURL() {
-    $list = array();
-    foreach ($this->params as $key => $val) {
-      $list[] = rawurlencode($key).'='.rawurlencode($val);
-    }
-    return self::$URL_BASE . '?' . implode('&', $list);
-  }
-
-  public function execute() {
-    $json = file_get_contents($this->getURL());
-    return json_decode($json, true);
-  }
-
-  public function setQuery($query) {
-    $this->params['q'] = $query;
-    return $this;
+    $this->setParam('key', self::$API_KEY);
+    $this->setParam('cx', self::$CSE_ID);
+    $this->setParam('fields', self::$DEFAULT_FIELDS);
   }
 
   public function setFields($fields) {
-    $this->params['fields'] = $fields;
-    return $this;
+    return $this->setParam('fields', $fields);
+  }
+  
+  protected function getURL() {
+    return self::$URL_BASE . '?' . $this->getQueryString();
+  }
+
+  protected function jsonToXml($json) {
+    $writer = new XMLWriter();
+    $writer->openMemory();
+    $writer->startDocument('1.0', 'utf-8');
+
+    $writer->startElement('results');
+    if (isset($json['queries']['request'][0]['totalResults'])) {
+      $writer->writeAttribute('count',
+          $json['queries']['request'][0]['totalResults']);
+    }
+
+    if (isset($json['items']) && is_array($json['items'])) {
+      foreach ($json['items'] as $rank => $item) {
+        $writer->startElement('result');
+        $writer->writeAttribute('rank', $rank + 1);
+
+        // Elements of a result.
+        $writer->writeElement('title', $item['title']);
+        $writer->writeElement('link', $item['link']);
+        $writer->writeElement('domain', self::urlToDomain($item['link']));
+        $writer->endElement(); // result
+      }
+    }
+    $writer->endElement(); // results
+
+    return $writer->outputMemory(true);
   }
 }
