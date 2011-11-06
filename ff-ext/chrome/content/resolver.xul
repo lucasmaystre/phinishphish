@@ -10,7 +10,7 @@
 
   <!-- 'main.js' defines the namespace, and therefore has to be on top. -->
   <script src="js/main.js"            type="application/javascript" />
-  <script src="js/EntityProvider.js"  type="application/javascript" />
+  <script src="js/SearchProvider.js"  type="application/javascript" />
   <script src="js/Resolver.js"        type="application/javascript" />
 
   <!-- Initializer script. -->
@@ -65,43 +65,25 @@
         </groupbox>
       </vbox>
       
-      <!-- Entity selector. -->
-      <vbox id="phinishphish-boxSelector">
-        <hbox id="pp-selectorHeader">
-          <label>Your query was : <label class="em" id="pp-queryLabel">paypel</label>
-          (<label id="pp-changeQuery" class="text-link" value="change" />).
-          Click on an image below:</label>
-        </hbox>
-
-        <vbox flex="1" pack="center" id="phinishphish-boxDisplay">
-          <grid>
-            <columns id="pp-selectCols" pack="center">
-              <column id="pp-col--1" align="center">
-                <image id="pp-img--1" src="chrome://phinishphish/content/img/other.png"
-                    width="128px" height="128px" />
-                <label>Other...</label>
-              </column>
-            </columns>
-          </grid>
-        </vbox>
-
-      </vbox>
-
       <!-- Message displayed when no entities found. -->
-      <vbox flex="1" pack="center" align="center" id="pp-boxUnknown">
+      <vbox flex="1" pack="center" align="center" id="pp-boxAllow">
 
-        <label id="pp-unknownTitle" class="em">We don't know this website yet.</label>
-        <label id="pp-unknownText">You can continue, but stay careful.</label>
+        <label id="pp-allowTitle" class="em">Everything seems OK.</label>
+        <label id="pp-allowText">
+          Thanks for your input, you can safely continue.
+        </label>
 
-        <label id="pp-unknownTime">
-          This window will close itself in <label id="pp-unknownSec" value="2" /> seconds.
+        <label id="pp-allowTime">
+          This window will close itself in <label id="pp-allowSec" value="2" />
+          seconds.
         </label>
       </vbox>
     </deck>
 
     <!-- The status bar. -->
     <statusbar id="phinishphish-statusBar">
-      <statusbarpanel id="phinishphish-version" label="Phinishing Phishing v. 1.0" flex="1"/>
+      <statusbarpanel id="phinishphish-version"
+          label="Phinishing Phishing v. 1.0" flex="1"/>
       <statusbarpanel id="pp-loadStatus" label="Loading..." />
       <statusbarpanel id="phinishphish-progressPanel">
         <progressmeter id="pp-progressBar" mode="undetermined" />

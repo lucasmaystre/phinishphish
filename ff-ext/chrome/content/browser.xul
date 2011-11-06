@@ -8,7 +8,7 @@
   <script src="js/Set.js"             type="application/javascript" />
   <script src="js/ReqObserver.js"     type="application/javascript" />
   <script src="js/ResObserver.js"     type="application/javascript" />
-  <script src="js/EntityProvider.js"  type="application/javascript" />
+  <script src="js/SearchProvider.js"  type="application/javascript" />
   <script src="js/TrustProvider.js"   type="application/javascript" />
   <script src="js/SpoofBlocker.js"    type="application/javascript" />
 

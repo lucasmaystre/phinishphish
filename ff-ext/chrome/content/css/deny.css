@@ -20,7 +20,7 @@ div#container {
   -moz-border-radius: 10px;
 }
 
-span.entity-name {
+span.query-string {
   background-color: #F8F3CC;
   border: 1px solid #CCCCCC;
   padding: 0 3px;

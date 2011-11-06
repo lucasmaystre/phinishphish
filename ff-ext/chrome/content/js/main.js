@@ -28,7 +28,7 @@ phinishphish.bind = function(obj, method, args) {
 
 /** Convenience logger. */
 phinishphish.log = function(str) {
-  return; // Disable logging;
+  //return; // Disable logging; TODO
   var consoleService = Cc["@mozilla.org/consoleservice;1"]
      .getService(Ci.nsIConsoleService);
   consoleService.logStringMessage(str);
@@ -57,8 +57,20 @@ phinishphish.param = function(url, param) {
   return null; // Parameter was not found.
 };
 
+/** Returns the top and 2nd level domain given a host name. */
+phinishphish.extractDomain = function(hostname) {
+  domains = hostname.split('.');
+  if (domains.length < 2) {
+    return hostname;
+  } else {
+    tld = domains.pop();
+    sld = domains.pop();
+    return sld + '.' + tld;
+  }
+};
+
 /** Simple wrapper around the tracing function provided by the module. */
 phinishphish.trace = function(event, data) {
   PPModules.trace(event, data);
   phinishphish.log('traced event "' + event + '" with data "' + data + '"');
-}
+};

@@ -7,7 +7,7 @@
  * Author: Lucas Maystre <lucas@maystre.ch>
  */
 phinishphish.SpoofBlocker = function() {
-  this.entityProv = new phinishphish.EntityProvider();
+  this.searchProv = new phinishphish.SearchProvider();
   this.trustProv = new phinishphish.TrustProvider();
   this.reqObserver = null;
   this.resObserver = null;
@@ -15,7 +15,7 @@ phinishphish.SpoofBlocker = function() {
   // Set storing the windows which contain user input.
   this.dirtyWindows = new phinishphish.Set();
 
-  // Map storing the hostnames for which resolution is pending.
+  // Map storing the domains for which resolution is pending.
   this.pending = {};
 };
 
@@ -27,8 +27,8 @@ phinishphish.SpoofBlocker.prototype.run = function() {
   phinishphish.trace('load', window.navigator.userAgent);
 
   // Listens to click on the status bar. TODO Remove.
-  //document.getElementById('phinishphish-sbp').addEventListener('click',
-  //    phinishphish.bind(this, this.resolve), false);
+  document.getElementById('phinishphish-sbp').addEventListener('click',
+      phinishphish.bind(this, this.resolve, 'google.com'), false);
 
   // Start listening to requests.
   this.reqObserver = new phinishphish.ReqObserver(
@@ -43,13 +43,13 @@ phinishphish.SpoofBlocker.prototype.run = function() {
   //    phinishphish.bind(this, this.resObserver.unregister), true);
 
   // Listen to load events to add listeners to input fields
+  // (last parameter bubbles the event further).
   gBrowser.addEventListener('load',
-      phinishphish.bind(this, this.handlePageLoad), true); // we want to bubble
-                                                           // the event further.
+      phinishphish.bind(this, this.handlePageLoad), true);
+
+  // (last parameter bubbles the event further).
   gBrowser.addEventListener('unload',
-      phinishphish.bind(this, this.handlePageUnload), true); // we want to bubble
-                                                             // the event
-                                                             // further.
+      phinishphish.bind(this, this.handlePageUnload), true);
 };
 
 phinishphish.SpoofBlocker.prototype.handlePageUnload = function(event) {
@@ -76,7 +76,7 @@ phinishphish.SpoofBlocker.prototype.handlePageLoad = function(event) {
     // Lookup trust and associated entities to cache them.
     try {
       this.trustProv.lookup(doc.defaultView.location.hostname);
-      // The next call is disabled for privacy purposed. It slows down the
+      // The next call is disabled for privacy reasons. It slows down the
       // resolutions, but doesn't allow the Entity API to track all the
       // hostnames the user visits.
       // this.entityProv.lookup(doc.defaultView.location.hostname);
@@ -120,9 +120,10 @@ phinishphish.SpoofBlocker.prototype.handleRequest = function(httpChannel) {
   // We go on only if the request comes from a window we were watching.
   if (this.dirtyWindows.contains(domWin)) {
     var hostname = httpChannel.URI.host;
+    var domain = phinishphish.extractDomain(hostname);
 
-    // Check if a resolution is already pending for this hostname.
-    if (this.pending[hostname] !== undefined) {
+    // Check if a resolution is already pending for this domain.
+    if (this.pending[domain] !== undefined) {
       httpChannel.cancel(Components.results.NS_BINDING_ABORTED);
       return;
     }
@@ -137,45 +138,22 @@ phinishphish.SpoofBlocker.prototype.handleRequest = function(httpChannel) {
       
       var overlay = phinishphish.SpoofBlocker.drawOverlay(domWin.document);
 
-      var outcome = this.resolve(hostname);
+      var outcome = this.resolve(domain);
       if (!outcome.isAllowed) {
         httpChannel.cancel(Components.results.NS_BINDING_ABORTED);
-        this.handleDenial(domWin, outcome.intention);
+        this.handleDenial(domWin, outcome.query);
       } else { // Resolution has suceeded.
         overlay.parentNode.removeChild(overlay);
-        // 'null' indicates an error during the resolution, and -1 means
-        // 'other'.
-        if (outcome.intention != null && outcome.inention.id != -1) {
-          this.showPopup(3000);
-        }
       }
     }
     this.dirtyWindows.remove(domWin);
   }
 };
 
-phinishphish.SpoofBlocker.prototype.handleDenial = function(win, intention) {
+phinishphish.SpoofBlocker.prototype.handleDenial = function(win, query) {
   var redirect = 'chrome://phinishphish/content/deny.htm'
-  if (intention) { // This can be null (when the user clicked on 'other').
-    var primaryName = '';
-    for (var i = 0; i < intention.domains.length; ++i) {
-      if (intention.domains[i].isPrimary) {
-        primaryName = intention.domains[i].name;
-        break;
-      }
-    }
-    redirect = redirect
-        + '?entity=' + encodeURI(intention.shortName)
-        + '&domain=' + encodeURI(primaryName);
-  }
+      + '?query=' + encodeURI(query)
   win.location = redirect;
-};
-
-phinishphish.SpoofBlocker.prototype.showPopup = function(duration) {
-  document.getElementById('phinishphish-notice')
-      .openPopup(document.getElementById('phinishphish-sbp'), 'before_end');
-  setTimeout(phinishphish.bind(document.getElementById('phinishphish-notice'),
-      document.getElementById('phinishphish-notice').hidePopup), duration);
 };
 
 phinishphish.SpoofBlocker.drawOverlay = function(doc) {
@@ -202,15 +180,16 @@ phinishphish.SpoofBlocker.drawOverlay = function(doc) {
  * Triggers the resolution mechanism, and returns a boolean indicating if the
  * request is allowed or not, based on the user's intention.
  */
-phinishphish.SpoofBlocker.prototype.resolve = function(hostname) {
+phinishphish.SpoofBlocker.prototype.resolve = function(domain) {
   // Mark the current hostname as pending resolution.
-  this.pending[hostname] = null;
+  this.pending[domain] = null;
 
   // Open the resolution window. The 'modal' option makes the call blocking.
-  while (this.pending[hostname] == null) {
+  //while (this.pending[domain] == null) {
     var url = 'chrome://phinishphish/content/resolver.xul?target='
-        + encodeURI(hostname);
-    var options = 'chrome,close=no,modal,centerscreen,width=550,height=330';
+        + encodeURI(domain);
+    var options = 'chrome,modal,centerscreen,width=550,height=330';
+    //close=no
     try {
       window.open(url, 'resolver', options);
     } catch(err) {
@@ -218,14 +197,14 @@ phinishphish.SpoofBlocker.prototype.resolve = function(hostname) {
       // TODO We just return a fake positive resolution outcome, to mask this
       // error. This is DANGEROUS but heck, it's a prototype!
       // A 'null' intention indicates that the resolution has failed.
-      this.pending[hostname] =
-          {'hostname': hostname, 'isAllowed': true, 'intention': null};
-      phinishphish.trace('error', hostname);
+      this.pending[domain] =
+          {'domain': domain, 'isAllowed': true, 'query': null};
+      phinishphish.trace('error', domain);
     }
-  }
+  //} TODO
 
-  var outcome = this.pending[hostname];
-  delete this.pending[hostname]; // Not pending anymore.
+  var outcome = this.pending[domain];
+  delete this.pending[domain]; // Not pending anymore.
   return outcome;
 };
 
@@ -234,7 +213,7 @@ phinishphish.SpoofBlocker.prototype.receiveMessage = function(data) {
   var nativeJSON = Cc["@mozilla.org/dom/json;1"].createInstance(Ci.nsIJSON);  
   var outcome = nativeJSON.decode(decodeURI(data));
 
-  if (this.pending[outcome.hostname] !== undefined) {
-    this.pending[outcome.hostname] = outcome;
+  if (this.pending[outcome.domain] !== undefined) {
+    this.pending[outcome.domain] = outcome;
   }
 };

@@ -1,17 +1,11 @@
 function init() {
-  var entity = decodeURI(
-      phinishphish.param(window.location.toString(), 'entity'));
-  var domain = decodeURI(
-      phinishphish.param(window.location.toString(), 'domain'));
+  var query = decodeURI(
+      phinishphish.param(window.location.toString(), 'query'));
 
-  var elements = document.getElementsByClassName('entity-name');
+  var elements = document.getElementsByClassName('query-string');
   for (var i = 0; i < elements.length; ++i) {
-    elements[i].innerHTML = entity;
+    elements[i].innerHTML = query;
   }
-  document.getElementById('search-input').value = entity;
-
-  var link = document.getElementById('correct-link');
-  link.innerHTML = domain;
-  link.setAttribute('href', 'http://' + domain);
+  document.getElementById('search-input').value = query;
 }
 init();

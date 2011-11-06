@@ -17,21 +17,21 @@
   border-bottom: 2px groove white;
 }
 
-#pp-unknownTitle, #pp-unknownText {
+#pp-allowTitle, #pp-allowText {
   color: #333333;
   font-size: medium;
 }
 
-#pp-unknownTime {
+#pp-allowTime {
   color: #666666;
   margin-top: 20px;
 }
 
-#pp-boxUnknown {
+#pp-boxAllow {
   cursor: pointer;
 }
 
-#phinishphish-boxDisplay, #pp-boxUnknown {
+#phinishphish-boxDisplay, #pp-boxAllow {
   background-color: white;
 }
 

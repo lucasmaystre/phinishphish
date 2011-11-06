@@ -11,7 +11,7 @@ phinishphish.ReqObserver.prototype.register = function() {
 
 phinishphish.ReqObserver.prototype.observe = function(subject, topic, data) {
   if (topic == 'http-on-modify-request') {
-    subject.QueryInterface(Ci.nsIHttpChannel);
+    subject.QueryInterface(Components.interfaces.nsIHttpChannel);
     this.callback(subject);
   }
 };
