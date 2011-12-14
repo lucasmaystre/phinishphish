@@ -57,16 +57,14 @@ phinishphish.param = function(url, param) {
   return null; // Parameter was not found.
 };
 
-/** Returns the top and 2nd level domain given a host name. */
+/**
+ * Returns the highest level domain that can be publicly registered from a given
+ * hostname. In case we it cannot be found for some reason, we (conservatively)
+ * return the hostname.
+ */
 phinishphish.extractDomain = function(hostname) {
-  domains = hostname.split('.');
-  if (domains.length < 2) {
-    return hostname;
-  } else {
-    tld = domains.pop();
-    sld = domains.pop();
-    return sld + '.' + tld;
-  }
+  var suffix = PPModules.domainExtractor.extract(hostname);
+  return suffix === null ? hostname : suffix;
 };
 
 /** Simple wrapper around the tracing function provided by the module. */

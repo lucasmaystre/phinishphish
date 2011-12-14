@@ -5,10 +5,14 @@ const Ci = Components.interfaces;
 // Import namespace declaration and classes.
 Components.utils.import("resource://phinishphish/namespace.js");
 Components.utils.import("resource://phinishphish/Cache.js");
+Components.utils.import("resource://phinishphish/DomainExtractor.js");
 
 // The two caches used as singleton across the browser.
 PPModules.searchCache = new PPModules.Cache(100); // cache size of 100.
 PPModules.trustCache = new PPModules.Cache(100); // cache size of 100.
+
+// The domain extractor, as a singleton because it's expensive to instantiate.
+PPModules.domainExtractor = new PPModules.DomainExtractor();
 
 PPModules.cid = /*BEGIN_CID*/-1/*END_CID*/;
 

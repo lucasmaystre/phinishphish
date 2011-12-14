@@ -26,6 +26,13 @@ phinishphish.SpoofBlocker.prototype.run = function() {
   // Trace the call.
   phinishphish.trace('load', window.navigator.userAgent);
 
+  // TODO For testing purposes. Remove.
+  // var testDomains = ["www.google.com", "google.com", "foo.bar.co.uk",
+  //     "foo.bar.pvt.k12.ma.us", "hello.com.br", "blu.bla.bli.blo"];
+  // for (var i = 0; i < testDomains.length; ++i) {
+  //   phinishphish.log(phinishphish.extractDomain(testDomains[i]));
+  // }
+
   // Listens to click on the status bar. TODO Remove.
   document.getElementById('phinishphish-sbp').addEventListener('click',
       phinishphish.bind(this, this.resolve, 'google.com'), false);
