@@ -19,6 +19,7 @@ phinishphish.Resolver.prototype.run = function() {
   this.targetDomain = phinishphish.param(window.location.toString(), 'target');
   phinishphish.trace('resolve', this.targetDomain)
   // Handle the case where the window is improperly called with no host.
+  // TODO Problem here. Should be targetDomain?
   this.targetHost = this.targetHost == null ? '' : this.targetHost;
   this.listen();
   this.initSearch();
