@@ -11,6 +11,10 @@ class BingSearch extends Search {
     $this->setParam('Market', 'en-US'); // Google (lol) for SearchRequest.Market
   }
 
+  public function setCount($nb) {
+    return $this->setParam("Web.Count", $nb);
+  }
+
   public function setQuery($query) {
     return $this->setParam('Query', $query);
   }

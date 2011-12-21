@@ -16,4 +16,4 @@ $search = new BingSearch();
 
 header('Content-Type: text/xml, charset="utf-8"');
 // TODO Handle the case where the param 'q' is missing.
-echo $search->setQuery($_GET['q'])->execute();
+echo $search->setQuery($_GET['q'])->setCount(20)->execute();
