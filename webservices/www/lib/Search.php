@@ -52,14 +52,10 @@ abstract class Search {
   }
 
   /**
-   * Returns the first and second level domain for any URL.
-   * E.g.: https://foo.bar.com/?bla=baz -> bar.com
+   * Returns the domain (hostname) given a URL.
+   * E.g.: https://foo.bar.com/?bla=baz -> foo.bar.com
    */
   static protected function urlToDomain($url) {
-    $fqdn = parse_url($url, PHP_URL_HOST);
-    $names = explode('.', $fqdn);
-    $tld = array_pop($names);
-    $sld = array_pop($names);
-    return $sld . '.' . $tld;
+    return parse_url($url, PHP_URL_HOST);
   }
 }
