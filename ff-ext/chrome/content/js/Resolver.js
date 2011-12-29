@@ -7,7 +7,7 @@ phinishphish.Resolver = function() {
   // Environment.
   this.searchProv = new phinishphish.SearchProvider(); // Cached search provider.
   this.mainDeck = null; // Will be set once the window is loaded.
-  this.targetHost = null;
+  this.targetDomain = null;
 
   // State variables.
   this.state = null; // Current window state.
@@ -17,10 +17,10 @@ phinishphish.Resolver = function() {
 phinishphish.Resolver.prototype.run = function() {
   // The host for which we resolve is given in the URL of the resolution window.
   this.targetDomain = phinishphish.param(window.location.toString(), 'target');
-  phinishphish.trace('resolve', this.targetDomain)
   // Handle the case where the window is improperly called with no host.
-  // TODO Problem here. Should be targetDomain?
-  this.targetHost = this.targetHost == null ? '' : this.targetHost;
+  this.targetDomain = this.targetDomain == null ? '' : this.targetDomain;
+
+  phinishphish.trace('resolve', this.targetDomain)
   this.listen();
   this.initSearch();
 }
@@ -82,36 +82,46 @@ phinishphish.Resolver.prototype.handleSearch = function() {
 };
 
 phinishphish.Resolver.prototype.handleResults = function(results) {
-  // First of all, sort the results by ascending rank.
-  results.sort(function(a, b) { return a.rank > b.rank; });
-
-  // Match the results against the target domain.
-  var match = false;
-  var result = null;
-  for (var i = 0; i < results.length; ++i) {
-    if (this.targetDomain == results[i].domain) {
-      match = true;
-      result = results[i];
-      phinishphish.log('target matched with result ' + result.link);
-      break;
-    }
-  }
+  var result = this.match(this.targetDomain, results);
 
   // Send the result of the resolution to the SpoofBlocker.
   this.notifyOutcome({
     'domain'   : this.targetDomain,
-    'isAllowed': match,
+    'isAllowed': (result !== null),
     'query'    : this.lastQuery,
     'result'   : result
   });
 
-  if (match) {
+  if (result !== null) {
     // Display a short message if we allow. Takes care of closing the window.
     this.initAllow();
   } else {
     // Resolution completed, we can close the window.
     window.close();
   }
+};
+
+/**
+ * The matching algorithm. Determines whether or not to allow a target domain
+ * based on a set of candidate URLs (ranked search results).
+ */
+phinishphish.Resolver.prototype.match = function(target, candidates) {
+  // for now, it's still the same old algorithm...
+  var suffix = phinishphish.extractDomain(target)
+  // First of all, sort the results by ascending rank.
+  candidates.sort(function(a, b) { return a.rank > b.rank; });
+
+  // Match the results against the target domain.
+  var result = null;
+  for (var i = 0; i < candidates.length; ++i) {
+    var candidateSuffix = phinishphish.extractDomain(candidates[i].domain);
+    if (suffix == candidateSuffix) {
+      result = candidates[i];
+      phinishphish.log('target matched with result ' + result.link);
+      break;
+    }
+  }
+  return result;
 };
 
 phinishphish.Resolver.prototype.initAllow = function() {

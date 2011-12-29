@@ -83,10 +83,6 @@ phinishphish.SpoofBlocker.prototype.handlePageLoad = function(event) {
     // Lookup trust and associated entities to cache them.
     try {
       this.trustProv.lookup(doc.defaultView.location.hostname);
-      // The next call is disabled for privacy reasons. It slows down the
-      // resolutions, but doesn't allow the Entity API to track all the
-      // hostnames the user visits.
-      // this.entityProv.lookup(doc.defaultView.location.hostname);
     } catch(err) {
       // An exception can be thrown when there is no hostname (e.g. a blank
       // page).
@@ -126,8 +122,7 @@ phinishphish.SpoofBlocker.prototype.handleRequest = function(httpChannel) {
 
   // We go on only if the request comes from a window we were watching.
   if (this.dirtyWindows.contains(domWin)) {
-    var hostname = httpChannel.URI.host;
-    var domain = phinishphish.extractDomain(hostname);
+    var domain = httpChannel.URI.host;
 
     // Check if a resolution is already pending for this domain.
     if (this.pending[domain] !== undefined) {
@@ -136,7 +131,7 @@ phinishphish.SpoofBlocker.prototype.handleRequest = function(httpChannel) {
     }
 
     // Synchronous trust lookup, and resolution if not trusted.
-    var isTrusted = this.trustProv.lookup(hostname, null, true);
+    var isTrusted = this.trustProv.lookup(domain, null, true);
     if (!isTrusted) {
       // Focus on this browser, and select the tab from which the request came.
       window.focus();
@@ -188,7 +183,7 @@ phinishphish.SpoofBlocker.drawOverlay = function(doc) {
  * request is allowed or not, based on the user's intention.
  */
 phinishphish.SpoofBlocker.prototype.resolve = function(domain) {
-  // Mark the current hostname as pending resolution.
+  // Mark the current domain as pending resolution.
   this.pending[domain] = null;
 
   // Open the resolution window. The 'modal' option makes the call blocking.
