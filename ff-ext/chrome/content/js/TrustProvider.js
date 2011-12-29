@@ -113,7 +113,7 @@ phinishphish.TrustProvider.prototype.parse = function(dom) {
       return {'rep': reputation, 'conf': confidence};
     }
   }
-  return false; // Defaul case.
+  return false; // Default case.
 };
 
 /**
@@ -121,8 +121,8 @@ phinishphish.TrustProvider.prototype.parse = function(dom) {
  * whether the domain is ultimately trusted or not.
  */
 phinishphish.TrustProvider.prototype.isTrusted = function(trustLevels) {
-  var reputation = trustLevels['rep'];
-  var confidence = trustLevels['conf'];
+  var reputation = trustLevels ? trustLevels['rep'] : 0;
+  var confidence = trustLevels ? trustLevels['conf'] : 0;
   phinishphish.log('rep: ' + reputation + ', conf:' + confidence);
 
   // According to WoT, the reputation is "unsatisfactory" below 60.
@@ -131,7 +131,7 @@ phinishphish.TrustProvider.prototype.isTrusted = function(trustLevels) {
   // 2/5 , which corresponds to a confidence of at least 12.
   var isTrusted = (reputation >= 60) && (confidence >= 12);
   phinishphish.log('isTrusted? ' + isTrusted);
-  return isTrusted;
+  return {'isTrusted': isTrusted, 'rep': reputation, 'conf': confidence};
 };
 
 phinishphish.trustProvider = new phinishphish.TrustProvider();

@@ -120,6 +120,9 @@ phinishphish.SpoofBlocker.prototype.handleRequest = function(httpChannel) {
     return;
   }
 
+  // Get the URL as a string.
+  var url = httpChannel.URI.spec;
+
   // We go on only if the request comes from a window we were watching.
   if (this.dirtyWindows.contains(domWin)) {
     var domain = httpChannel.URI.host;
@@ -131,24 +134,46 @@ phinishphish.SpoofBlocker.prototype.handleRequest = function(httpChannel) {
     }
 
     // Synchronous trust lookup, and resolution if not trusted.
-    var isTrusted = this.trustProv.lookup(domain, null, true);
-    if (!isTrusted) {
-      // Focus on this browser, and select the tab from which the request came.
-      window.focus();
-      var tabIndex = gBrowser.getBrowserIndexForDocument(domWin.top.document);
-      gBrowser.selectedTab = gBrowser.tabContainer.childNodes[tabIndex]; 
-      
-      var overlay = phinishphish.SpoofBlocker.drawOverlay(domWin.document);
+    var trustInfo = this.trustProv.lookup(domain, null, true);
+    if (!trustInfo.isTrusted) {
+      phinishphish.logRequest(
+          {'url': url, 'has_input': true, 'is_suspect': true});
+      if (!phinishphish.isResolved(domain)) {
+        // Trigger the resolution only if it is the first time we encounter this
+        // domain.
+        // Focus on this browser, and select the tab from which the request came.
+        window.focus();
+        var tabIndex = gBrowser.getBrowserIndexForDocument(domWin.top.document);
+        gBrowser.selectedTab = gBrowser.tabContainer.childNodes[tabIndex]; 
+        var overlay = phinishphish.SpoofBlocker.drawOverlay(domWin.document);
 
-      var outcome = this.resolve(domain);
-      if (!outcome.isAllowed) {
-        httpChannel.cancel(Components.results.NS_BINDING_ABORTED);
-        this.handleDenial(domWin, outcome.query);
-      } else { // Resolution has suceeded.
-        overlay.parentNode.removeChild(overlay);
+        var outcome = this.resolve(domain);
+        if (/*!outcome.isAllowed*/ true) {
+          // Don't do anything special... We're just logging.
+          overlay.parentNode.removeChild(overlay);
+          phinishphish.logResolution({
+              'hostname'  : outcome.domain,
+              'keyword'   : outcome.query,
+              'is_allowed': outcome.isAllowed,
+              'reputation': trustInfo.rep,
+              'confidence': trustInfo.conf,
+              'search_res': outcome.rawResult
+            });
+          // httpChannel.cancel(Components.results.NS_BINDING_ABORTED);
+          // this.handleDenial(domWin, outcome.query);
+        } //else { // Resolution has suceeded.
+          //overlay.parentNode.removeChild(overlay);
+        //}
       }
+    } else {
+      phinishphish.logRequest(
+          {'url': url, 'has_input': true, 'is_suspect': false});
     }
+
     this.dirtyWindows.remove(domWin);
+  } else {
+    phinishphish.logRequest(
+        {'url': url, 'has_input': false, 'is_suspect': false});
   }
 };
 

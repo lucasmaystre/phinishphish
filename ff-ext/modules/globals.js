@@ -6,6 +6,7 @@ const Ci = Components.interfaces;
 Components.utils.import("resource://phinishphish/namespace.js");
 Components.utils.import("resource://phinishphish/Cache.js");
 Components.utils.import("resource://phinishphish/DomainExtractor.js");
+Components.utils.import("resource://phinishphish/ActivityLogger.js");
 
 // The two caches used as singleton across the browser.
 PPModules.searchCache = new PPModules.Cache(100); // cache size of 100.
@@ -13,6 +14,9 @@ PPModules.trustCache = new PPModules.Cache(100); // cache size of 100.
 
 // The domain extractor, as a singleton because it's expensive to instantiate.
 PPModules.domainExtractor = new PPModules.DomainExtractor();
+
+// The activity logger, as a singleton to avoid duplicating DB connections.
+PPModules.activityLogger = new PPModules.ActivityLogger();
 
 PPModules.cid = /*BEGIN_CID*/-1/*END_CID*/;
 

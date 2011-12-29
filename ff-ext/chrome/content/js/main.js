@@ -34,6 +34,30 @@ phinishphish.log = function(str) {
   consoleService.logStringMessage(str);
 };
 
+/**
+ * Logs a request permanently to the database.
+ * For the fields in param, refer to ActivityLogger.js
+ */
+phinishphish.logRequest = function(params) {
+  PPModules.activityLogger.logRequest(params);
+}
+
+/**
+ * Logs a completed user resolution to the database.
+ * For the fields in param, refer to ActivityLogger.js
+ */
+phinishphish.logResolution = function(params) {
+  PPModules.activityLogger.logResolution(params);
+}
+
+/**
+ * Queries the log database whether or not the hostname has already been
+ * resolved in the past.
+ */
+phinishphish.isResolved = function(hostname) {
+  return PPModules.activityLogger.isResolved(hostname);
+}
+
 /** Returns the value of a GET parameter given a URL, or null. */
 phinishphish.param = function(url, param) {
   // Assert that the URL has a query string.

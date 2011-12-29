@@ -43,12 +43,14 @@ phinishphish.SearchProvider.exp = function() {
  */
 phinishphish.SearchProvider.prototype.search = function(query, callback) {
   // First, lookup the cache to see if we can speed things up.
-  if (this.cache.getItem(query) != null) {
-    if (callback) {
-      callback.call(null, this.cache.getItem(query));
-      return;
-    }
-  }
+  // TODO: Cache is disabled for now. We would have to store the raw query as
+  // well... Maybe we should just remove the cache altogether.
+  // if (this.cache.getItem(query) != null) {
+  //   if (callback) {
+  //     callback.call(null, this.cache.getItem(query));
+  //     return;
+  //   }
+  // }
 
   var url = phinishphish.SearchProvider.URL_PREFIX + encodeURI(query);
   var req = new XMLHttpRequest();
@@ -65,7 +67,8 @@ phinishphish.SearchProvider.prototype.search = function(query, callback) {
                 {'expirationAbsolute': phinishphish.SearchProvider.exp()});
           }
           if (callback) {
-            callback.call(null, results);
+            // We also include the raw response, for logging purposes.
+            callback.call(null, results, req.responseText);
             return;
           }
         }

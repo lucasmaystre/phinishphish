@@ -81,7 +81,7 @@ phinishphish.Resolver.prototype.handleSearch = function() {
   } 
 };
 
-phinishphish.Resolver.prototype.handleResults = function(results) {
+phinishphish.Resolver.prototype.handleResults = function(results, rawRes) {
   var result = this.match(this.targetDomain, results);
 
   // Send the result of the resolution to the SpoofBlocker.
@@ -89,7 +89,8 @@ phinishphish.Resolver.prototype.handleResults = function(results) {
     'domain'   : this.targetDomain,
     'isAllowed': (result !== null),
     'query'    : this.lastQuery,
-    'result'   : result
+    'result'   : result,
+    'rawResult': rawRes
   });
 
   if (result !== null) {
